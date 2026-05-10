@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRIC - Panel de Profesores</title>
+    <style>
+        /* Estilos generales basados en la estética de la imagen */
+        :root {
+            --bg-dark: #1b1e25;
+            --card-blue: #2c63eb;
+            --card-blue-light: #4477f1;
+            --text-main: #ffffff;
+            --text-muted: #a3b8cc;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        /* Cabecera */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .greeting {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .greeting span {
+            color: #60a5fa; /* Tono azul más claro para el nombre */
+        }
+
+        .profile-pic-mini {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--card-blue);
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Tarjetas */
+        .card {
+            background: linear-gradient(180deg, var(--card-blue) 0%, #1e4bb5 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            border-bottom: 1px dashed rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Formularios */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: rgba(0,0,0,0.2);
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* Botones */
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary { background-color: #f59e0b; color: #000;} /* Botón de acento cálido */
+        .btn-success { background-color: var(--success); }
+        .btn-danger { background-color: var(--danger); }
+
+        /* Listas */
+        .list-item {
+            background-color: rgba(0,0,0,0.15);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-details p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="greeting">👋 Hola, <span id="headerName">Profesor</span></div>
+        <div class="profile-pic-mini" id="headerPic"></div>
+    </header>
+
+    <div class="card">
+        <h2>⚙️ Configuración de Perfil</h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" id="profNombre" placeholder="Ej: Juan">
+            </div>
+            <div class="form-group">
+                <label>Apellido</label>
+                <input type="text" id="profApellido" placeholder="Ej: Pérez">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>URL de Foto de Perfil</label>
+            <input type="text" id="profFoto" placeholder="https://ejemplo.com/foto.jpg">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Tarifa Clase Individual ($)</label>
+                <input type="number" id="precioInd" placeholder="Ej: 5000">
+            </div>
+            <div class="form-group">
+                <label>Tarifa Clase Grupal ($)</label>
+                <input type="number" id="precioGrup" placeholder="Ej: 3000">
+            </div>
+        </div>
+        <button class="btn-primary" onclick="guardarPerfil()">Guardar Perfil</button>
+    </div>
+
+    <div class="card">
+        <h2>🎾 Asignar Nueva Clase Libre</h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Tipo de Clase</label>
+                <select id="claseTipo">
+                    <option value="Individual">Individual</option>
+                    <option value="Grupal">Grupal</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Categoría</label>
+                <select id="claseCategoria">
+                    <option value="Iniciación">Iniciación (7ma/8va)</option>
+                    <option value="Intermedio">Intermedio (5ta/6ta)</option>
+                    <option value="Avanzado">Avanzado (3ra/4ta)</option>
+                    <option value="Competición">Competición (1ra/2da)</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Fecha</label>
+                <input type="date" id="claseFecha">
+            </div>
+            <div class="form-group">
+                <label>Horario</label>
+                <input type="time" id="claseHora">
+            </div>
+        </div>
+        <button class="btn-primary" onclick="crearClase()">Publicar Clase</button>
+    </div>
+
+    <div class="card">
+        <h2>📩 Solicitudes de Alumnos</h2>
+        <div id="listaSolicitudes">
+            </div>
+    </div>
+
+    <div class="card">
+        <h2>📅 Mis Clases Publicadas</h2>
+        <div id="listaClases">
+            </div>
+    </div>
+</div>
+
+<script>
+    // Inicialización de datos
+    let perfil = JSON.parse(localStorage.getItem('profPerfil')) || {
+        nombre: '', apellido: '', foto: '', precioInd: '', precioGrup: ''
+    };
+    
+    let clases = JSON.parse(localStorage.getItem('profClases')) || [];
+    
+    // Mock de solicitudes para poder probar la funcionalidad visualmente
+    let solicitudes = JSON.parse(localStorage.getItem('profSolicitudes')) || [
+        { id: 1, alumno: 'Carlos Tevez', tipo: 'Grupal', fecha: '2026-05-12', hora: '18:00', estado: 'Pendiente' },
+        { id: 2, alumno: 'Pedro', tipo: 'Individual', fecha: '2026-05-14', hora: '09:00', estado: 'Pendiente' }
+    ];
+
+    // Funciones de Perfil
+    function cargarPerfil() {
+        document.getElementById('profNombre').value = perfil.nombre;
+        document.getElementById('profApellido').value = perfil.apellido;
+        document.getElementById('profFoto').value = perfil.foto;
+        document.getElementById('precioInd').value = perfil.precioInd;
+        document.getElementById('precioGrup').value = perfil.precioGrup;
+
+        if (perfil.nombre) {
+            document.getElementById('headerName').innerText = perfil.nombre;
+        }
+        if (perfil.foto) {
+            document.getElementById('headerPic').style.backgroundImage = `url('${perfil.foto}')`;
+        }
+    }
+
+    function guardarPerfil() {
+        perfil = {
+            nombre: document.getElementById('profNombre').value,
+            apellido: document.getElementById('profApellido').value,
+            foto: document.getElementById('profFoto').value,
+            precioInd: document.getElementById('precioInd').value,
+            precioGrup: document.getElementById('precioGrup').value,
+        };
+        localStorage.setItem('profPerfil', JSON.stringify(perfil));
+        cargarPerfil();
+        alert('Perfil actualizado con éxito');
+    }
+
+    // Funciones de Clases
+    function crearClase() {
+        const tipo = document.getElementById('claseTipo').value;
+        const categoria = document.getElementById('claseCategoria').value;
+        const fecha = document.getElementById('claseFecha').value;
+        const hora = document.getElementById('claseHora').value;
+
+        if(!fecha || !hora) {
+            alert('Por favor completá la fecha y la hora.');
+            return;
+        }
+
+        const nuevaClase = {
+            id: Date.now(),
+            tipo,
+            categoria,
+            fecha,
+            hora
+        };
+
+        clases.push(nuevaClase);
+        localStorage.setItem('profClases', JSON.stringify(clases));
+        renderizarClases();
+        
+        // Limpiar inputs
+        document.getElementById('claseFecha').value = '';
+        document.getElementById('claseHora').value = '';
+    }
+
+    function renderizarClases() {
+        const contenedor = document.getElementById('listaClases');
+        contenedor.innerHTML = '';
+
+        if(clases.length === 0) {
+            contenedor.innerHTML = '<p style="color: var(--text-muted)">No tenés clases publicadas.</p>';
+            return;
+        }
+
+        clases.forEach(clase => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = `
+                <div class="item-details">
+                    <p><strong>${clase.tipo}</strong> - ${clase.categoria}</p>
+                    <p>🕒 ${clase.fecha} a las ${clase.hora}</p>
+                </div>
+                <button class="btn-danger" onclick="eliminarClase(${clase.id})">Borrar</button>
+            `;
+            contenedor.appendChild(div);
+        });
+    }
+
+    function eliminarClase(id) {
+        clases = clases.filter(c => c.id !== id);
+        localStorage.setItem('profClases', JSON.stringify(clases));
+        renderizarClases();
+    }
+
+    // Funciones de Solicitudes
+    function renderizarSolicitudes() {
+        const contenedor = document.getElementById('listaSolicitudes');
+        contenedor.innerHTML = '';
+
+        const pendientes = solicitudes.filter(s => s.estado === 'Pendiente');
+
+        if(pendientes.length === 0) {
+            contenedor.innerHTML = '<p style="color: var(--text-muted)">No hay solicitudes pendientes.</p>';
+            return;
+        }
+
+        pendientes.forEach(sol => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = `
+                <div class="item-details">
+                    <p><strong>👤 ${sol.alumno}</strong></p>
+                    <p>Solicita clase ${sol.tipo} el ${sol.fecha} - ${sol.hora}</p>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-success" onclick="gestionarSolicitud(${sol.id}, 'Aceptada')">✓</button>
+                    <button class="btn-danger" onclick="gestionarSolicitud(${sol.id}, 'Rechazada')">✗</button>
+                </div>
+            `;
+            contenedor.appendChild(div);
+        });
+    }
+
+    function gestionarSolicitud(id, nuevoEstado) {
+        solicitudes = solicitudes.map(s => {
+            if(s.id === id) s.estado = nuevoEstado;
+            return s;
+        });
+        localStorage.setItem('profSolicitudes', JSON.stringify(solicitudes));
+        renderizarSolicitudes();
+    }
+
+    // Arrancar la app
+    cargarPerfil();
+    renderizarClases();
+    renderizarSolicitudes();
+</script>
+
+</body>
+</html>
