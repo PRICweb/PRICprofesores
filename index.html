@@ -6,15 +6,13 @@
     <title>PRIC - Panel de Profesores y Agenda</title>
     <style>
         :root {
-            --bg-dark: #121212;
-            --card-blue: #2c63eb; /* Azul para contenedores fijos */
-            --input-black: #000000; /* Negro para zonas a completar */
+            --bg-dark: #1b1e25;
+            --panel-grey: #262931; /* Gris de los paneles de la imagen */
+            --input-black: #000000;
+            --blue-accent: #2c63eb; /* Azul exclusivo para botones */
             --text-main: #ffffff;
             --text-muted: #a3b8cc;
-            --border-color: #000000;
-            --success: #10b981;
-            --danger: #ef4444;
-            --accent: #f59e0b;
+            --border-color: #333333;
         }
 
         body {
@@ -28,7 +26,7 @@
         }
 
         .container {
-            max-width: 800px; /* Reducido para vista diaria */
+            max-width: 800px;
             width: 100%;
         }
 
@@ -45,7 +43,7 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .greeting {
@@ -54,7 +52,7 @@
         }
 
         .greeting span {
-            color: #60a5fa;
+            color: var(--text-main); /* Se sacó el azul del texto */
         }
 
         .header-actions {
@@ -75,19 +73,20 @@
             color: var(--text-main);
         }
 
-        /* Tarjetas: Fondo Azul */
+        /* Tarjetas: Ahora son grises */
         .card {
-            background: var(--card-blue);
-            border-radius: 12px;
+            background: var(--panel-grey);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .card h2 {
             margin-top: 0;
             font-size: 1.2rem;
-            border-bottom: 1px dashed rgba(255,255,255,0.3);
+            border-bottom: 1px dashed rgba(255,255,255,0.2);
             padding-bottom: 10px;
             margin-bottom: 15px;
         }
@@ -100,8 +99,8 @@
         input, select {
             width: 100%;
             padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #333;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
             background-color: var(--input-black);
             color: white;
             box-sizing: border-box;
@@ -109,20 +108,40 @@
         }
         input::placeholder { color: rgba(255,255,255,0.4); }
 
+        /* Botones: Los únicos con color azul */
         button {
             padding: 10px 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             color: white;
+            transition: opacity 0.2s;
         }
         button:hover { opacity: 0.9; }
-        .btn-primary { background-color: var(--accent); color: #000; }
-        .btn-secondary { background-color: var(--input-black); color: white; border: 1px solid #333; }
-        .btn-success { background-color: var(--success); }
-        .btn-danger { background-color: var(--danger); }
-        .btn-agenda { background-color: #4b5563; width: 100%; margin-bottom: 20px; font-size: 1.1rem; padding: 15px;}
+        
+        .btn-primary { 
+            background-color: var(--blue-accent); 
+        }
+        
+        .btn-agenda { 
+            background-color: var(--blue-accent); 
+            width: 100%; 
+            margin-bottom: 20px; 
+            font-size: 1.1rem; 
+            padding: 15px;
+        }
+
+        .btn-secondary { 
+            background-color: var(--panel-grey); 
+            border: 1px solid #555; 
+        }
+
+        /* Botones de acción menores (aceptar/rechazar) también en azul o gris para no romper la regla */
+        .btn-action {
+            background-color: var(--blue-accent);
+            padding: 8px 12px;
+        }
 
         /* Agenda Diaria */
         .agenda-nav {
@@ -132,31 +151,31 @@
             background-color: var(--input-black);
             padding: 10px 20px;
             border-radius: 8px 8px 0 0;
-            border: 1px solid #333;
+            border: 1px solid var(--border-color);
             border-bottom: none;
         }
 
         .calendar-wrapper {
             background-color: var(--input-black);
             border-radius: 0 0 8px 8px;
-            border: 1px solid #333;
-            display: none; /* Oculto por defecto */
+            border: 1px solid var(--border-color);
+            display: none;
         }
 
         .calendar {
             display: grid;
             grid-template-columns: 80px 1fr;
-            border-top: 1px solid #333;
+            border-top: 1px solid var(--border-color);
         }
 
         .cal-header {
-            background-color: #1a1a1a;
+            background-color: var(--panel-grey);
             padding: 10px;
             text-align: center;
             font-size: 0.9rem;
             font-weight: bold;
-            border-right: 1px solid #333;
-            border-bottom: 1px solid #333;
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .cal-time {
@@ -164,20 +183,21 @@
             text-align: center;
             font-size: 0.9rem;
             color: var(--text-muted);
-            border-right: 1px solid #333;
-            border-bottom: 1px solid #333;
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .cal-cell {
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
             min-height: 60px;
             position: relative;
             padding: 5px;
         }
 
+        /* Bloques de clase ahora son grises */
         .class-block {
-            background-color: var(--card-blue);
-            border-left: 4px solid var(--accent);
+            background-color: var(--panel-grey);
+            border-left: 4px solid #555;
             border-radius: 4px;
             padding: 8px;
             font-size: 0.85rem;
@@ -187,13 +207,17 @@
             flex-direction: column;
             gap: 4px;
             color: white;
+            border-top: 1px solid #3a3f4b;
+            border-right: 1px solid #3a3f4b;
+            border-bottom: 1px solid #1a1c23;
         }
         .class-block strong { font-size: 0.9rem; }
-        .class-block .club { color: #93c5fd; }
-        .class-block .alumnos { color: #fde68a; font-style: italic; }
+        .class-block .club { color: #d1d5db; }
+        .class-block .alumnos { color: #9ca3af; font-style: italic; }
 
         .list-item {
             background-color: var(--input-black);
+            border: 1px solid var(--border-color);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -309,7 +333,6 @@
             <div id="listaSolicitudes"></div>
         </div>
     </div>
-
 
     <div id="view-config" class="view">
         <header>
@@ -441,7 +464,6 @@
         const dia = document.getElementById('claseDia').value;
         const hora = document.getElementById('claseHora').value;
 
-        // Verificar si ya existe clase a esa hora
         if(clases.some(c => c.dia === dia && c.hora === hora)) {
             alert('Ya tenés una clase fija asignada en ese día y horario.');
             return;
@@ -473,8 +495,8 @@
                     <p>Solicita clase ${sol.tipo} los ${sol.dia} a las ${sol.hora}</p>
                 </div>
                 <div class="item-actions">
-                    <button class="btn-success" onclick="gestionarSolicitud(${sol.id}, 'Aceptada')">Aceptar</button>
-                    <button class="btn-danger" onclick="gestionarSolicitud(${sol.id}, 'Rechazada')">✗</button>
+                    <button class="btn-action" onclick="gestionarSolicitud(${sol.id}, 'Aceptada')">Aceptar</button>
+                    <button class="btn-action" style="background-color: #555;" onclick="gestionarSolicitud(${sol.id}, 'Rechazada')">Rechazar</button>
                 </div>
             `;
             contenedor.appendChild(div);
@@ -496,7 +518,9 @@
                 });
             }
             localStorage.setItem('profClasesFijas', JSON.stringify(clases));
-            renderizarCalendario();
+            if(document.getElementById('contenedor-agenda').style.display === 'block') {
+                renderizarCalendario();
+            }
         }
         solicitudes = solicitudes.filter(s => s.id !== id);
         localStorage.setItem('profSolicitudes', JSON.stringify(solicitudes));
@@ -505,7 +529,6 @@
 
     cargarPerfil();
     renderizarSolicitudes();
-    // La agenda no se renderiza hasta apretar "Ver Agenda"
 
 </script>
 </body>
