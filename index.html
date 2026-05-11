@@ -17,11 +17,10 @@
             --success: #10b981;
             --danger: #ef4444;
             
-            /* Colores de las clases basados en la imagen */
-            --class-empty-bg: #fca5a5; /* Naranja/Amarillo */
+            /* Colores de las clases */
             --class-empty-bg: #fbb146;
             --class-empty-border: #d97706;
-            --class-full-bg: #41d39c; /* Verde Menta */
+            --class-full-bg: #41d39c; 
             --class-full-border: #059669;
         }
 
@@ -49,7 +48,7 @@
             border-bottom: 1px solid var(--border-color);
         }
         .greeting { font-size: 1.5rem; font-weight: bold; }
-        .greeting span { color: var(--blue-accent); }
+        .greeting span { color: var(--text-muted); }
         .header-actions { display: flex; align-items: center; gap: 15px; }
         .icon-btn {
             background: none; border: none; color: var(--text-muted);
@@ -88,19 +87,54 @@
         .btn-primary:hover { opacity: 0.9; }
         .btn-secondary { background-color: transparent; color: white; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 6px; width: 100%; margin-top: 10px;}
         .btn-danger { background-color: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 6px; width: 100%; margin-top: 10px;}
+        .btn-crear-clase { background-color: var(--blue-accent); color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; margin-bottom: 20px; }
+        .btn-crear-clase:hover { opacity: 0.9; }
+
+        /* --- Acordeones (Ahora Azules) --- */
+        .accordion {
+            background-color: var(--bg-main);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: none;
+            overflow: hidden;
+        }
+        .accordion summary {
+            background-color: var(--blue-accent);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .accordion summary::-webkit-details-marker { display: none; }
+        .accordion summary::after {
+            content: '▼';
+            font-size: 0.8rem;
+        }
+        .accordion[open] summary::after { content: '▲'; }
+        
+        .accordion-content {
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            background-color: var(--bg-panel);
+        }
 
         /* --- Agenda Navegación --- */
         .calendar-nav {
             display: flex; justify-content: space-between; align-items: center;
             background-color: var(--bg-panel); padding: 12px 20px; border-radius: 8px 8px 0 0;
-            border: 1px solid var(--border-color); margin-top: 15px;
+            border: 1px solid var(--border-color);
         }
         .nav-arrows { display: flex; align-items: center; gap: 20px; }
         .nav-arrows h3 { margin: 0; font-size: 1.1rem; min-width: 100px; text-align: center; }
         .nav-arrows button { background: none; border: none; color: white; font-size: 1.2rem; }
         .nav-actions { display: flex; gap: 10px; }
-        .btn-sm { padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; border: none; color: white; }
-        .btn-active { background-color: var(--blue-accent); }
+        .btn-sm { padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; border: none; color: white; background-color: var(--border-color); }
 
         /* --- Grilla del Calendario --- */
         .calendar-container {
@@ -113,8 +147,9 @@
         .cal-time-col { width: 60px; border-right: 1px solid var(--border-color); }
         .cal-main-col { flex: 1; text-align: center; padding: 10px; }
         .cal-main-col strong { display: block; font-size: 0.95rem; }
+        .cal-main-col small { color: var(--text-muted); font-size: 0.8rem; }
 
-        .hour-row { display: flex; height: 60px; } /* Cada slot es de 60px = 60 minutos */
+        .hour-row { display: flex; height: 60px; }
         .hour-label {
             width: 60px; text-align: center; padding-top: 5px; font-size: 0.8rem;
             color: var(--text-muted); border-right: 1px dashed var(--border-dashed);
@@ -131,7 +166,7 @@
             position: absolute; left: 0; right: 0; top: 0;
             border-radius: 4px; padding: 6px 10px; font-size: 0.85rem;
             box-sizing: border-box; cursor: pointer; z-index: 10;
-            color: #111827; /* Texto oscuro para contrastar con el amarillo/verde */
+            color: #111827; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             display: flex; flex-direction: column; justify-content: flex-start;
         }
@@ -149,6 +184,17 @@
         }
         .alumno-item p { margin: 0; font-size: 0.9rem; }
         .alumno-item small { color: var(--text-muted); }
+        
+        /* --- Solicitudes en acordeón --- */
+        .solicitud-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; border-bottom: 1px solid var(--border-color);
+        }
+        .solicitud-item:last-child { border-bottom: none; }
+        .btn-icon-action { background: none; border: none; font-size: 1.2rem; font-weight: bold; padding: 5px 10px; border-radius: 4px; }
+        .btn-icon-action.text-success { color: var(--success); }
+        .btn-icon-action.text-danger { color: var(--danger); }
+        .btn-icon-action:hover { background-color: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
@@ -157,12 +203,27 @@
     
     <div id="view-agenda" class="view active">
         <header>
-            <div class="greeting">Hola,<br><span class="headerName">Admin</span></div>
+            <div class="greeting">Hola,<br><span class="headerName" style="color: white;">Admin</span></div>
             <div class="header-actions">
                 <button class="icon-btn" title="Métricas">📊</button>
                 <button class="icon-btn" onclick="switchView('view-config')" title="Configuración">⚙️</button>
             </div>
         </header>
+
+        <details class="accordion">
+            <summary>Notificaciones</summary>
+            <div class="accordion-content">
+                <p style="margin:0; color: var(--text-muted);">No hay notificaciones nuevas.</p>
+            </div>
+        </details>
+
+        <details class="accordion" open>
+            <summary>Solicitudes</summary>
+            <div class="accordion-content" id="listaSolicitudes" style="padding: 0 15px;">
+                </div>
+        </details>
+
+        <button class="btn-crear-clase" onclick="abrirModalCrear('08:00')">+ Nueva Clase</button>
 
         <div class="calendar-nav">
             <div class="nav-arrows">
@@ -171,15 +232,18 @@
                 <button onclick="cambiarDia(1)">❯</button>
             </div>
             <div class="nav-actions">
-                <button class="btn-sm btn-active" onclick="irAHoy()">Hoy</button>
-                <button class="btn-sm btn-active">📅 Calendario</button>
+                <button class="btn-sm" onclick="irAHoy()">Hoy</button>
+                <button class="btn-sm">📅 Calendario</button>
             </div>
         </div>
 
         <div class="calendar-container">
             <div class="cal-header-row">
                 <div class="cal-time-col"></div>
-                <div class="cal-main-col"><strong>Cancha 1</strong></div>
+                <div class="cal-main-col">
+                    <strong>Clase Fija</strong>
+                    <small>Pádel / Tenis</small>
+                </div>
             </div>
             <div id="calendar-grid">
                 </div>
@@ -188,12 +252,36 @@
 
     <div id="view-config" class="view">
         <header>
-            <div class="greeting">Configuración</div>
+            <div class="greeting" style="color: white;">Configuración</div>
             <div class="header-actions">
                 <button class="btn-secondary" style="margin:0; width:auto;" onclick="switchView('view-agenda')">Volver</button>
             </div>
         </header>
+
+        <div style="background-color: var(--bg-panel); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="profNombre" placeholder="Nombre">
+                </div>
+                <div class="form-group">
+                    <label>Apellido</label>
+                    <input type="text" id="profApellido" placeholder="Apellido">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tarifa Individual ($)</label>
+                    <input type="number" id="precioInd">
+                </div>
+                <div class="form-group">
+                    <label>Tarifa Grupal ($)</label>
+                    <input type="number" id="precioGrup">
+                </div>
+            </div>
+            <button class="btn-primary" style="margin-top: 15px;" onclick="guardarPerfil()">Guardar Cambios</button>
         </div>
+    </div>
 </div>
 
 <div class="modal-overlay" id="modal-crear">
@@ -259,7 +347,11 @@
 </div>
 
 <script>
+    let perfil = JSON.parse(localStorage.getItem('profPerfil')) || { nombre: 'Admin', apellido: '', precioInd: '', precioGrup: '' };
     let clases = JSON.parse(localStorage.getItem('profClasesTurnos')) || [];
+    let solicitudes = JSON.parse(localStorage.getItem('profSolicitudes')) || [
+        { id: 1, alumno: 'Carlos Tevez', tipo: 'Grupal', dia: 'Hoy', hora: '18:00', estado: 'Pendiente' }
+    ];
     let claseSeleccionadaId = null;
     let fechaMostrada = new Date();
     const nombresDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -267,6 +359,26 @@
     function switchView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
+    }
+
+    function cargarPerfil() {
+        document.getElementById('profNombre').value = perfil.nombre;
+        document.getElementById('profApellido').value = perfil.apellido;
+        document.getElementById('precioInd').value = perfil.precioInd;
+        document.getElementById('precioGrup').value = perfil.precioGrup;
+        document.querySelectorAll('.headerName').forEach(el => el.innerText = perfil.nombre || 'Admin');
+    }
+
+    function guardarPerfil() {
+        perfil = {
+            nombre: document.getElementById('profNombre').value,
+            apellido: document.getElementById('profApellido').value,
+            precioInd: document.getElementById('precioInd').value,
+            precioGrup: document.getElementById('precioGrup').value,
+        };
+        localStorage.setItem('profPerfil', JSON.stringify(perfil));
+        cargarPerfil();
+        switchView('view-agenda');
     }
 
     /* --- GESTIÓN DE MODALES --- */
@@ -305,21 +417,17 @@
         const horas = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
 
         horas.forEach(hora => {
-            // Fila de la hora base
             let divFila = document.createElement('div');
             divFila.className = 'hour-row';
             
-            // Label de la hora
             let divLabel = document.createElement('div');
             divLabel.className = 'hour-label';
             divLabel.innerText = hora;
             
-            // Slot donde van las clases
             let divSlot = document.createElement('div');
             divSlot.className = 'hour-slot';
-            divSlot.onclick = () => abrirModalCrear(hora); // Click para crear clase
+            divSlot.onclick = () => abrirModalCrear(hora); 
             
-            // Buscar si hay clases que empiecen en este horario exacto
             let clasesEnEstaHora = clases.filter(c => c.fecha === fechaFormat && c.hora === hora);
             
             clasesEnEstaHora.forEach(clase => {
@@ -327,7 +435,6 @@
                 let estaLlena = clase.alumnos && clase.alumnos.length > 0;
                 
                 divClase.className = `class-block ${estaLlena ? 'class-full' : 'class-empty'}`;
-                // Altura proporcional: 60px por hora. Si es 90 min -> 90px
                 divClase.style.height = `${clase.duracion}px`;
                 
                 divClase.innerHTML = `
@@ -336,7 +443,6 @@
                     <span style="margin-top: auto; font-weight: bold;">Pago: Pend</span>
                 `;
                 
-                // Detener propagación para no abrir el modal de creación al clickear la clase
                 divClase.onclick = (e) => {
                     e.stopPropagation();
                     abrirDetalleClase(clase.id);
@@ -419,13 +525,12 @@
         
         localStorage.setItem('profClasesTurnos', JSON.stringify(clases));
         
-        // Limpiar inputs
         document.getElementById('alumNombre').value = '';
         document.getElementById('alumApellido').value = '';
         document.getElementById('alumWsp').value = '';
         
         renderizarAlumnosDeClase(clases[claseIndex]);
-        renderizarCalendario(); // Para actualizar el color (de amarillo a verde)
+        renderizarCalendario(); 
     }
 
     function quitarAlumno(alumnoIndex) {
@@ -445,8 +550,44 @@
         }
     }
 
+    /* --- SOLICITUDES --- */
+    function renderizarSolicitudes() {
+        const contenedor = document.getElementById('listaSolicitudes');
+        contenedor.innerHTML = '';
+        const pendientes = solicitudes.filter(s => s.estado === 'Pendiente');
+
+        if(pendientes.length === 0) {
+            contenedor.innerHTML = '<p style="color: var(--text-muted); padding: 15px 0;">No hay solicitudes pendientes.</p>';
+            return;
+        }
+
+        pendientes.forEach(sol => {
+            const div = document.createElement('div');
+            div.className = 'solicitud-item';
+            div.innerHTML = `
+                <div>
+                    <p style="margin: 0; font-size: 0.95rem;"><strong>${sol.alumno}</strong></p>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">${sol.tipo} - ${sol.dia} a las ${sol.hora}</p>
+                </div>
+                <div>
+                    <button class="btn-icon-action text-success" onclick="gestionarSolicitud(${sol.id}, 'Aceptada')">✓</button>
+                    <button class="btn-icon-action text-danger" onclick="gestionarSolicitud(${sol.id}, 'Rechazada')">✗</button>
+                </div>
+            `;
+            contenedor.appendChild(div);
+        });
+    }
+
+    function gestionarSolicitud(id, estado) {
+        solicitudes = solicitudes.filter(s => s.id !== id);
+        localStorage.setItem('profSolicitudes', JSON.stringify(solicitudes));
+        renderizarSolicitudes();
+    }
+
     // Inicializar
+    cargarPerfil();
     renderizarCalendario();
+    renderizarSolicitudes();
 
 </script>
 </body>
