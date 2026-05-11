@@ -6,13 +6,12 @@
     <title>PRIC - Panel de Profesores y Agenda</title>
     <style>
         :root {
-            --bg-dark: #1b1e25;
-            --bg-darker: #13151a;
-            --card-blue: #2c63eb;
-            --card-blue-light: #4477f1;
+            --bg-dark: #121212;
+            --card-blue: #2c63eb; /* Azul para contenedores fijos */
+            --input-black: #000000; /* Negro para zonas a completar */
             --text-main: #ffffff;
             --text-muted: #a3b8cc;
-            --border-color: #2a2e39;
+            --border-color: #000000;
             --success: #10b981;
             --danger: #ef4444;
             --accent: #f59e0b;
@@ -29,11 +28,10 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 800px; /* Reducido para vista diaria */
             width: 100%;
         }
 
-        /* Sistema de Vistas */
         .view {
             display: none;
         }
@@ -41,22 +39,18 @@
             display: block;
         }
 
-        /* Cabecera */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #333;
         }
 
         .greeting {
             font-size: 1.5rem;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .greeting span {
@@ -67,15 +61,6 @@
             display: flex;
             align-items: center;
             gap: 15px;
-        }
-
-        .profile-pic-mini {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--card-blue);
-            background-size: cover;
-            background-position: center;
         }
 
         .icon-btn {
@@ -90,13 +75,13 @@
             color: var(--text-main);
         }
 
-        /* Tarjetas y Formularios */
+        /* Tarjetas: Fondo Azul */
         .card {
-            background: linear-gradient(180deg, var(--card-blue) 0%, #1e4bb5 100%);
+            background: var(--card-blue);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
         .card h2 {
@@ -109,14 +94,15 @@
 
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; }
-        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted); }
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #fff; }
         
+        /* Zonas a completar: Negro Absoluto */
         input, select {
             width: 100%;
             padding: 10px;
             border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background-color: rgba(0,0,0,0.2);
+            border: 1px solid #333;
+            background-color: var(--input-black);
             color: white;
             box-sizing: border-box;
             outline: none;
@@ -133,81 +119,81 @@
         }
         button:hover { opacity: 0.9; }
         .btn-primary { background-color: var(--accent); color: #000; }
-        .btn-secondary { background-color: rgba(255,255,255,0.2); color: white; }
+        .btn-secondary { background-color: var(--input-black); color: white; border: 1px solid #333; }
         .btn-success { background-color: var(--success); }
         .btn-danger { background-color: var(--danger); }
+        .btn-agenda { background-color: #4b5563; width: 100%; margin-bottom: 20px; font-size: 1.1rem; padding: 15px;}
 
-        /* Agenda - Calendario */
-        .agenda-controls {
+        /* Agenda Diaria */
+        .agenda-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            background-color: var(--input-black);
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid #333;
+            border-bottom: none;
         }
 
         .calendar-wrapper {
-            background-color: var(--bg-darker);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            overflow-x: auto;
+            background-color: var(--input-black);
+            border-radius: 0 0 8px 8px;
+            border: 1px solid #333;
+            display: none; /* Oculto por defecto */
         }
 
         .calendar {
             display: grid;
-            grid-template-columns: 60px repeat(7, minmax(120px, 1fr));
-            border-top: 1px solid var(--border-color);
-            border-left: 1px solid var(--border-color);
-            min-width: 800px;
+            grid-template-columns: 80px 1fr;
+            border-top: 1px solid #333;
         }
 
         .cal-header {
-            background-color: rgba(255,255,255,0.05);
+            background-color: #1a1a1a;
             padding: 10px;
             text-align: center;
             font-size: 0.9rem;
             font-weight: bold;
-            border-right: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid #333;
+            border-bottom: 1px solid #333;
         }
 
         .cal-time {
             padding: 10px 5px;
-            text-align: right;
-            font-size: 0.8rem;
+            text-align: center;
+            font-size: 0.9rem;
             color: var(--text-muted);
-            border-right: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid #333;
+            border-bottom: 1px solid #333;
         }
 
         .cal-cell {
-            border-right: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #333;
             min-height: 60px;
             position: relative;
-            padding: 2px;
+            padding: 5px;
         }
 
-        /* Bloque de Clase en Agenda */
         .class-block {
             background-color: var(--card-blue);
             border-left: 4px solid var(--accent);
             border-radius: 4px;
-            padding: 5px;
-            font-size: 0.75rem;
-            height: calc(100% - 4px);
+            padding: 8px;
+            font-size: 0.85rem;
+            height: calc(100% - 10px);
             box-sizing: border-box;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
+            color: white;
         }
-        .class-block strong { font-size: 0.8rem; }
+        .class-block strong { font-size: 0.9rem; }
         .class-block .club { color: #93c5fd; }
         .class-block .alumnos { color: #fde68a; font-style: italic; }
 
-        /* Lista de Solicitudes */
         .list-item {
-            background-color: rgba(0,0,0,0.15);
+            background-color: var(--input-black);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -225,20 +211,18 @@
     
     <div id="view-agenda" class="view active">
         <header>
-            <div class="greeting">👋 Hola, <span class="headerName">Profesor</span></div>
+            <div class="greeting">Hola, <span class="headerName">Profesor</span></div>
             <div class="header-actions">
-                <div class="profile-pic-mini headerPic"></div>
                 <button class="icon-btn" onclick="switchView('view-config')" title="Configuración">⚙️</button>
             </div>
         </header>
 
-        <div class="agenda-controls">
-            <button class="btn-primary" onclick="toggleFormClase()">+ Crear Nueva Clase</button>
-            <h3 style="margin: 0;" id="semanaRango">Mi Agenda</h3>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+            <button class="btn-primary" onclick="toggleFormClase()">+ Crear Nueva Clase Fija</button>
         </div>
 
         <div id="form-crear-clase" class="card" style="display: none;">
-            <h2>🎾 Configurar Nueva Clase</h2>
+            <h2>Configurar Nueva Clase Fija</h2>
             <div class="form-row">
                 <div class="form-group">
                     <label>Tipo de Clase</label>
@@ -250,20 +234,36 @@
                 <div class="form-group">
                     <label>Categoría</label>
                     <select id="claseCategoria">
-                        <option value="Iniciación">Iniciación (7ma/8va)</option>
-                        <option value="Intermedio">Intermedio (5ta/6ta)</option>
-                        <option value="Avanzado">Avanzado (3ra/4ta)</option>
+                        <option value="8va">8va</option>
+                        <option value="7ma">7ma</option>
+                        <option value="6ta">6ta</option>
+                        <option value="5ta">5ta</option>
+                        <option value="4ta">4ta</option>
+                        <option value="3ra">3ra</option>
+                        <option value="2da">2da</option>
+                        <option value="1ra">1ra</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Club</label>
-                    <input type="text" id="claseClub" placeholder="Ej: Padel Pro">
+                    <select id="claseClub">
+                        <option value="Orbit">Orbit</option>
+                        <option value="Padel Pro Norte">Padel Pro Norte</option>
+                    </select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" id="claseFecha">
+                    <label>Día de la Semana</label>
+                    <select id="claseDia">
+                        <option value="Lunes">Lunes</option>
+                        <option value="Martes">Martes</option>
+                        <option value="Miércoles">Miércoles</option>
+                        <option value="Jueves">Jueves</option>
+                        <option value="Viernes">Viernes</option>
+                        <option value="Sábado">Sábado</option>
+                        <option value="Domingo">Domingo</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Horario</label>
@@ -290,25 +290,32 @@
             <button class="btn-secondary" onclick="toggleFormClase()">Cancelar</button>
         </div>
 
-        <div class="calendar-wrapper">
-            <div class="calendar" id="calendar-grid">
-                </div>
+        <button class="btn-agenda" onclick="toggleAgenda()">Ver Agenda</button>
+
+        <div id="contenedor-agenda" style="display: none;">
+            <div class="agenda-nav">
+                <button class="btn-secondary" onclick="cambiarDia(-1)">◄ Anterior</button>
+                <h3 id="label-dia" style="margin: 0; color: white;">Día</h3>
+                <button class="btn-secondary" onclick="cambiarDia(1)">Siguiente ►</button>
+            </div>
+            <div class="calendar-wrapper" style="display: block;">
+                <div class="calendar" id="calendar-grid">
+                    </div>
+            </div>
         </div>
 
         <div class="card" style="margin-top: 30px;">
-            <h2>📩 Solicitudes Pendientes</h2>
-            <div id="listaSolicitudes">
-                </div>
+            <h2>Solicitudes Pendientes</h2>
+            <div id="listaSolicitudes"></div>
         </div>
     </div>
 
 
     <div id="view-config" class="view">
         <header>
-            <div class="greeting">⚙️ Configuración</div>
+            <div class="greeting">Configuración</div>
             <div class="header-actions">
-                <button class="btn-secondary" onclick="switchView('view-agenda')">Volver a la Agenda</button>
-                <div class="profile-pic-mini headerPic"></div>
+                <button class="btn-secondary" onclick="switchView('view-agenda')">Volver</button>
             </div>
         </header>
 
@@ -323,10 +330,6 @@
                     <label>Apellido</label>
                     <input type="text" id="profApellido" placeholder="Ej: Pérez">
                 </div>
-            </div>
-            <div class="form-group">
-                <label>URL de Foto de Perfil</label>
-                <input type="text" id="profFoto" placeholder="https://ejemplo.com/foto.jpg">
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -345,16 +348,15 @@
 </div>
 
 <script>
-    // --- ESTADO DE LA APP ---
-    let perfil = JSON.parse(localStorage.getItem('profPerfil')) || { nombre: '', apellido: '', foto: '', precioInd: '', precioGrup: '' };
-    let clases = JSON.parse(localStorage.getItem('profClases')) || [];
+    let perfil = JSON.parse(localStorage.getItem('profPerfil')) || { nombre: '', apellido: '', precioInd: '', precioGrup: '' };
+    let clases = JSON.parse(localStorage.getItem('profClasesFijas')) || [];
     let solicitudes = JSON.parse(localStorage.getItem('profSolicitudes')) || [
-        { id: 1, alumno: 'Carlos Tevez', tipo: 'Grupal', fecha: '2026-05-12', hora: '18:00', estado: 'Pendiente' },
-        { id: 2, alumno: 'Pedro', tipo: 'Individual', fecha: '2026-05-14', hora: '09:00', estado: 'Pendiente' }
+        { id: 1, alumno: 'Carlos', tipo: 'Grupal', dia: 'Martes', hora: '18:00', estado: 'Pendiente' }
     ];
-    let fechaActual = new Date('2026-05-10'); // Fecha forzada a hoy según contexto para coincidir con tus capturas.
 
-    // --- NAVEGACIÓN ---
+    const nombresDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    let diaActualIndex = new Date().getDay(); 
+
     function switchView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
@@ -365,128 +367,93 @@
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     }
 
-    // --- PERFIL ---
+    function toggleAgenda() {
+        const agenda = document.getElementById('contenedor-agenda');
+        agenda.style.display = agenda.style.display === 'none' ? 'block' : 'none';
+        renderizarCalendario();
+    }
+
     function cargarPerfil() {
         document.getElementById('profNombre').value = perfil.nombre;
         document.getElementById('profApellido').value = perfil.apellido;
-        document.getElementById('profFoto').value = perfil.foto;
         document.getElementById('precioInd').value = perfil.precioInd;
         document.getElementById('precioGrup').value = perfil.precioGrup;
-
-        actualizarUIHeader();
+        document.querySelectorAll('.headerName').forEach(el => el.innerText = perfil.nombre || 'Profesor');
     }
 
     function guardarPerfil() {
         perfil = {
             nombre: document.getElementById('profNombre').value,
             apellido: document.getElementById('profApellido').value,
-            foto: document.getElementById('profFoto').value,
             precioInd: document.getElementById('precioInd').value,
             precioGrup: document.getElementById('precioGrup').value,
         };
         localStorage.setItem('profPerfil', JSON.stringify(perfil));
-        actualizarUIHeader();
-        alert('Perfil guardado');
+        cargarPerfil();
         switchView('view-agenda');
     }
 
-    function actualizarUIHeader() {
-        document.querySelectorAll('.headerName').forEach(el => el.innerText = perfil.nombre || 'Profesor');
-        if (perfil.foto) {
-            document.querySelectorAll('.headerPic').forEach(el => el.style.backgroundImage = `url('${perfil.foto}')`);
-        }
-    }
-
-    // --- CALENDARIO Y CLASES ---
-    function obtenerDiasSemana() {
-        let lunes = new Date(fechaActual);
-        let dia = lunes.getDay() || 7; 
-        if (dia !== 1) lunes.setHours(-24 * (dia - 1));
-        
-        let dias = [];
-        let nombresDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-        
-        for (let i = 0; i < 7; i++) {
-            let fecha = new Date(lunes);
-            fecha.setDate(lunes.getDate() + i);
-            dias.push({
-                nombre: nombresDias[i],
-                fechaStr: fecha.toISOString().split('T')[0],
-                diaMes: fecha.getDate()
-            });
-        }
-        return dias;
+    function cambiarDia(offset) {
+        diaActualIndex = (diaActualIndex + offset + 7) % 7;
+        renderizarCalendario();
     }
 
     function renderizarCalendario() {
-        const grid = document.getElementById('calendar-grid');
-        grid.innerHTML = '';
+        const diaNombre = nombresDias[diaActualIndex];
+        document.getElementById('label-dia').innerText = diaNombre;
         
-        const diasSemana = obtenerDiasSemana();
+        const grid = document.getElementById('calendar-grid');
+        grid.innerHTML = `
+            <div class="cal-header">Hora</div>
+            <div class="cal-header">Clase Fija</div>
+        `;
+        
         const horas = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
 
-        // Fila de Cabecera (Días)
-        grid.innerHTML += `<div class="cal-header">Horario</div>`;
-        diasSemana.forEach(dia => {
-            grid.innerHTML += `<div class="cal-header">${dia.nombre} ${dia.diaMes}</div>`;
-        });
-
-        // Filas de Horas
         horas.forEach(hora => {
-            // Celda de la hora
             grid.innerHTML += `<div class="cal-time">${hora}</div>`;
             
-            // Celdas de los días para esa hora
-            diasSemana.forEach(dia => {
-                let idCelda = `${dia.fechaStr}-${hora}`;
-                
-                // Buscar si hay clase en este día y hora
-                let claseEncontrada = clases.find(c => c.fecha === dia.fechaStr && c.hora === hora);
-                let contenidoCelda = '';
+            let claseEncontrada = clases.find(c => c.dia === diaNombre && c.hora === hora);
+            let contenidoCelda = '';
 
-                if(claseEncontrada) {
-                    let alumnosText = claseEncontrada.alumnos.length > 0 
-                                      ? claseEncontrada.alumnos.join(', ') 
-                                      : 'Libre / Sin alumnos';
+            if(claseEncontrada) {
+                let alumnosText = claseEncontrada.alumnos.length > 0 
+                                  ? claseEncontrada.alumnos.join(', ') 
+                                  : 'Libre / Sin alumnos';
 
-                    contenidoCelda = `
-                        <div class="class-block">
-                            <strong>${claseEncontrada.tipo}</strong>
-                            <span class="club">📍 ${claseEncontrada.club}</span>
-                            <span>🕒 ${claseEncontrada.hora}</span>
-                            <span class="alumnos">👤 ${alumnosText}</span>
-                        </div>
-                    `;
-                }
+                contenidoCelda = `
+                    <div class="class-block">
+                        <strong>${claseEncontrada.tipo} - ${claseEncontrada.categoria}</strong>
+                        <span class="club">Sede: ${claseEncontrada.club}</span>
+                        <span class="alumnos">Alumnos: ${alumnosText}</span>
+                    </div>
+                `;
+            }
 
-                grid.innerHTML += `<div class="cal-cell" id="cell-${idCelda}">${contenidoCelda}</div>`;
-            });
+            grid.innerHTML += `<div class="cal-cell">${contenidoCelda}</div>`;
         });
     }
 
     function crearClase() {
         const tipo = document.getElementById('claseTipo').value;
         const categoria = document.getElementById('claseCategoria').value;
-        const club = document.getElementById('claseClub').value || 'Sin especificar';
-        const fecha = document.getElementById('claseFecha').value;
+        const club = document.getElementById('claseClub').value;
+        const dia = document.getElementById('claseDia').value;
         const hora = document.getElementById('claseHora').value;
 
-        if(!fecha || !hora) {
-            alert('Completá la fecha y horario.');
+        // Verificar si ya existe clase a esa hora
+        if(clases.some(c => c.dia === dia && c.hora === hora)) {
+            alert('Ya tenés una clase fija asignada en ese día y horario.');
             return;
         }
 
-        clases.push({
-            id: Date.now(),
-            tipo, categoria, club, fecha, hora, alumnos: []
-        });
-
-        localStorage.setItem('profClases', JSON.stringify(clases));
+        clases.push({ id: Date.now(), tipo, categoria, club, dia, hora, alumnos: [] });
+        localStorage.setItem('profClasesFijas', JSON.stringify(clases));
+        
         renderizarCalendario();
         toggleFormClase();
     }
 
-    // --- SOLICITUDES ---
     function renderizarSolicitudes() {
         const contenedor = document.getElementById('listaSolicitudes');
         contenedor.innerHTML = '';
@@ -502,8 +469,8 @@
             div.className = 'list-item';
             div.innerHTML = `
                 <div class="item-details">
-                    <p><strong>👤 ${sol.alumno}</strong></p>
-                    <p>Solicita clase ${sol.tipo} el ${sol.fecha} - ${sol.hora}</p>
+                    <p><strong>${sol.alumno}</strong></p>
+                    <p>Solicita clase ${sol.tipo} los ${sol.dia} a las ${sol.hora}</p>
                 </div>
                 <div class="item-actions">
                     <button class="btn-success" onclick="gestionarSolicitud(${sol.id}, 'Aceptada')">Aceptar</button>
@@ -516,40 +483,29 @@
 
     function gestionarSolicitud(id, estado) {
         let solicitud = solicitudes.find(s => s.id === id);
-        if(solicitud) {
-            solicitud.estado = estado;
-            
-            // Si se acepta, buscar si hay una clase creada en ese horario e inscribirlo
-            if(estado === 'Aceptada') {
-                let claseExistente = clases.find(c => c.fecha === solicitud.fecha && c.hora === solicitud.hora);
-                if(claseExistente) {
-                    if(!claseExistente.alumnos.includes(solicitud.alumno)){
-                        claseExistente.alumnos.push(solicitud.alumno);
-                    }
-                } else {
-                    // Si no hay clase en la agenda, la crea automáticamente
-                    clases.push({
-                        id: Date.now(),
-                        tipo: solicitud.tipo,
-                        categoria: 'General',
-                        club: 'A confirmar',
-                        fecha: solicitud.fecha,
-                        hora: solicitud.hora,
-                        alumnos: [solicitud.alumno]
-                    });
+        if(solicitud && estado === 'Aceptada') {
+            let claseExistente = clases.find(c => c.dia === solicitud.dia && c.hora === solicitud.hora);
+            if(claseExistente) {
+                if(!claseExistente.alumnos.includes(solicitud.alumno)){
+                    claseExistente.alumnos.push(solicitud.alumno);
                 }
-                localStorage.setItem('profClases', JSON.stringify(clases));
-                renderizarCalendario();
+            } else {
+                clases.push({
+                    id: Date.now(), tipo: solicitud.tipo, categoria: 'N/A', club: 'A confirmar',
+                    dia: solicitud.dia, hora: solicitud.hora, alumnos: [solicitud.alumno]
+                });
             }
+            localStorage.setItem('profClasesFijas', JSON.stringify(clases));
+            renderizarCalendario();
         }
+        solicitudes = solicitudes.filter(s => s.id !== id);
         localStorage.setItem('profSolicitudes', JSON.stringify(solicitudes));
         renderizarSolicitudes();
     }
 
-    // Inicializar App
     cargarPerfil();
-    renderizarCalendario();
     renderizarSolicitudes();
+    // La agenda no se renderiza hasta apretar "Ver Agenda"
 
 </script>
 </body>
