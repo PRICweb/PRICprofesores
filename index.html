@@ -6,14 +6,15 @@
     <title>PRIC - Panel de Profesores y Agenda</title>
     <style>
         :root {
-            --bg-main: #1b1e25;
-            --bg-panel: #262931;
-            --bg-calendar: #17191f;
-            --border-color: #2f333d;
-            --border-dashed: #3a3f4b;
+            /* Colores extraídos de la segunda imagen */
+            --bg-main: #1b1e25; 
+            --bg-panel: #242730; 
+            --bg-calendar: #1c1f26;
+            --border-color: #2f3440;
+            --border-dashed: #363b47;
             --text-main: #ffffff;
             --text-muted: #8b95a5;
-            --blue-accent: #3b82f6; 
+            --blue-accent: #488df6; 
             --success: #10b981;
             --danger: #ef4444;
             
@@ -48,13 +49,13 @@
             border-bottom: 1px solid var(--border-color);
         }
         .greeting { font-size: 1.5rem; font-weight: bold; }
-        .greeting span { color: var(--text-muted); }
+        .greeting span { color: var(--blue-accent); }
         .header-actions { display: flex; align-items: center; gap: 15px; }
         .icon-btn {
             background: none; border: none; color: var(--text-muted);
             font-size: 1.5rem; cursor: pointer; transition: color 0.2s;
         }
-        .icon-btn:hover { color: var(--text-main); }
+        .icon-btn:hover { filter: brightness(1.2); }
 
         /* --- Modales --- */
         .modal-overlay {
@@ -76,7 +77,7 @@
         /* --- Formularios --- */
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; }
-        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted); }
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
         input, select {
             width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);
             background-color: var(--bg-main); color: white; box-sizing: border-box; outline: none;
@@ -85,12 +86,11 @@
         button { font-family: inherit; cursor: pointer; }
         .btn-primary { background-color: var(--blue-accent); color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; width: 100%; }
         .btn-primary:hover { opacity: 0.9; }
-        .btn-secondary { background-color: transparent; color: white; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 6px; width: 100%; margin-top: 10px;}
-        .btn-danger { background-color: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 6px; width: 100%; margin-top: 10px;}
-        .btn-crear-clase { background-color: var(--blue-accent); color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; margin-bottom: 20px; }
-        .btn-crear-clase:hover { opacity: 0.9; }
+        .btn-secondary { background-color: var(--bg-main); color: white; border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 6px; width: 100%; margin-top: 10px;}
+        .btn-danger { background-color: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 6px; width: 100%; margin-top: 10px; font-weight: bold;}
+        .btn-sm { padding: 8px 15px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; border: none; color: white; background-color: var(--blue-accent); }
 
-        /* --- Acordeones (Ahora Azules) --- */
+        /* --- Acordeones Base --- */
         .accordion {
             background-color: var(--bg-main);
             border-radius: 8px;
@@ -110,10 +110,7 @@
             align-items: center;
         }
         .accordion summary::-webkit-details-marker { display: none; }
-        .accordion summary::after {
-            content: '▼';
-            font-size: 0.8rem;
-        }
+        .accordion summary::after { content: '▼'; font-size: 0.8rem; }
         .accordion[open] summary::after { content: '▲'; }
         
         .accordion-content {
@@ -124,17 +121,21 @@
             background-color: var(--bg-panel);
         }
 
+        /* --- Acordeón Secundario (Modal Alumnos) --- */
+        .accordion-secundario { background-color: var(--bg-main); border: 1px solid var(--border-color); margin-bottom: 10px;}
+        .accordion-secundario summary { background-color: var(--bg-panel); color: white; border-radius: 8px;}
+        .accordion-secundario .accordion-content { background-color: var(--bg-main); border: none; border-top: 1px solid var(--border-color); }
+
         /* --- Agenda Navegación --- */
         .calendar-nav {
             display: flex; justify-content: space-between; align-items: center;
             background-color: var(--bg-panel); padding: 12px 20px; border-radius: 8px 8px 0 0;
             border: 1px solid var(--border-color);
         }
-        .nav-arrows { display: flex; align-items: center; gap: 20px; }
-        .nav-arrows h3 { margin: 0; font-size: 1.1rem; min-width: 100px; text-align: center; }
+        .nav-arrows { display: flex; align-items: center; gap: 15px; }
+        .nav-arrows h3 { margin: 0; font-size: 1rem; min-width: 90px; text-align: center; }
         .nav-arrows button { background: none; border: none; color: white; font-size: 1.2rem; }
         .nav-actions { display: flex; gap: 10px; }
-        .btn-sm { padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; border: none; color: white; background-color: var(--border-color); }
 
         /* --- Grilla del Calendario --- */
         .calendar-container {
@@ -185,16 +186,38 @@
         .alumno-item p { margin: 0; font-size: 0.9rem; }
         .alumno-item small { color: var(--text-muted); }
         
-        /* --- Solicitudes en acordeón --- */
-        .solicitud-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px; border-bottom: 1px solid var(--border-color);
+        /* --- Gráfico Mockup --- */
+        .chart-container {
+            background-color: var(--bg-main); padding: 20px; border-radius: 8px; 
+            border: 1px solid var(--border-color); margin-bottom: 20px; 
+            height: 250px; position: relative; display: flex; flex-direction: column; justify-content: flex-end;
         }
-        .solicitud-item:last-child { border-bottom: none; }
-        .btn-icon-action { background: none; border: none; font-size: 1.2rem; font-weight: bold; padding: 5px 10px; border-radius: 4px; }
-        .btn-icon-action.text-success { color: var(--success); }
-        .btn-icon-action.text-danger { color: var(--danger); }
-        .btn-icon-action:hover { background-color: rgba(255,255,255,0.1); }
+        .chart-legend {
+            position: absolute; top: 15px; width: 100%; text-align: center; 
+            font-size: 0.85rem; color: var(--text-muted);
+        }
+        .chart-legend span { display: inline-flex; align-items: center; gap: 5px; margin: 0 10px; }
+        .legend-box-green { width: 30px; height: 10px; border: 2px solid var(--success); }
+        .legend-box-blue { width: 30px; height: 10px; background-color: var(--blue-accent); }
+        
+        .chart-y-axis {
+            position: absolute; left: 15px; bottom: 30px; display: flex; flex-direction: column; 
+            justify-content: space-between; height: 180px; font-size: 0.75rem; color: var(--text-muted);
+        }
+        
+        .chart-line-zero {
+            margin-left: 40px; border-bottom: 2px solid var(--success); 
+            display: flex; justify-content: space-between; padding-bottom: 5px; position: relative;
+        }
+        .chart-dot {
+            width: 8px; height: 8px; background-color: var(--success); border-radius: 50%;
+            position: absolute; bottom: -5px; transform: translateX(-50%);
+        }
+
+        .metrics-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.9rem; margin-bottom: 20px; }
+        .metrics-table th { padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-weight: normal; }
+        .metrics-table td { padding: 12px; border-bottom: 1px solid var(--border-color); }
+        .metrics-table tr:last-child td { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -203,9 +226,11 @@
     
     <div id="view-agenda" class="view active">
         <header>
-            <div class="greeting">Hola,<br><span class="headerName" style="color: white;">Admin</span></div>
+            <div class="greeting">Hola,<br><span class="headerName" style="color: var(--blue-accent);">Admin</span></div>
             <div class="header-actions">
-                <button class="icon-btn" title="Métricas">📊</button>
+                <button class="icon-btn" title="Perfil">🙎‍♂️</button>
+                <button class="icon-btn" title="Pagos">💰</button>
+                <button class="icon-btn" onclick="abrirModal('modal-metricas')" title="Métricas">📊</button>
                 <button class="icon-btn" onclick="switchView('view-config')" title="Configuración">⚙️</button>
             </div>
         </header>
@@ -223,14 +248,15 @@
                 </div>
         </details>
 
-        <button class="btn-crear-clase" onclick="abrirModalCrear('08:00')">+ Nueva Clase</button>
-
         <div class="calendar-nav">
             <div class="nav-arrows">
                 <button onclick="cambiarDia(-1)">❮</button>
-                <h3 id="label-dia">HOY</h3>
+                <h3 id="label-dia">LUN 11/5</h3>
                 <button onclick="cambiarDia(1)">❯</button>
             </div>
+            
+            <button class="btn-sm" onclick="abrirModalCrear('08:00')">+ Nueva Clase</button>
+            
             <div class="nav-actions">
                 <button class="btn-sm" onclick="irAHoy()">Hoy</button>
                 <button class="btn-sm">📅 Calendario</button>
@@ -241,8 +267,8 @@
             <div class="cal-header-row">
                 <div class="cal-time-col"></div>
                 <div class="cal-main-col">
-                    <strong>Clase Fija</strong>
-                    <small>Pádel / Tenis</small>
+                    <strong>Cancha 1</strong>
+                    <small>Pádel Indoor</small>
                 </div>
             </div>
             <div id="calendar-grid">
@@ -304,7 +330,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Horario Inicio</label>
-                <input type="text" id="claseHora" disabled style="background-color: var(--bg-panel); color: var(--text-muted);">
+                <input type="text" id="claseHora" disabled style="background-color: var(--bg-main); color: var(--text-muted);">
             </div>
             <div class="form-group">
                 <label>Duración</label>
@@ -325,36 +351,100 @@
         <button class="close-modal" onclick="cerrarModal('modal-detalle')">×</button>
         <h2 style="margin-top:0;" id="detalleTitulo">Detalles de Clase</h2>
         
-        <div id="listaAlumnosContainer" style="margin-bottom: 20px;">
+        <div id="listaAlumnosContainer" style="margin-bottom: 15px;">
             <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Alumnos Inscriptos</h3>
             <div id="listaAlumnosRender"></div>
         </div>
 
-        <div style="background-color: var(--bg-main); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
-            <h3 style="font-size: 1rem; margin-top: 0;">Agregar Alumno Manualmente</h3>
-            <div class="form-row">
-                <div class="form-group"><input type="text" id="alumNombre" placeholder="Nombre"></div>
-                <div class="form-group"><input type="text" id="alumApellido" placeholder="Apellido"></div>
+        <details class="accordion accordion-secundario">
+            <summary>+ Agregar Alumno Manualmente</summary>
+            <div class="accordion-content">
+                <div class="form-row">
+                    <div class="form-group"><input type="text" id="alumNombre" placeholder="Nombre"></div>
+                    <div class="form-group"><input type="text" id="alumApellido" placeholder="Apellido"></div>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <input type="text" id="alumWsp" placeholder="WhatsApp (Ej: +549...)">
+                </div>
+                <button class="btn-primary" onclick="agregarAlumnoAClaseActual()">Inscribir Alumno</button>
             </div>
-            <div class="form-group" style="margin-bottom: 10px;">
-                <input type="text" id="alumWsp" placeholder="WhatsApp (Ej: +549...)">
-            </div>
-            <button class="btn-primary" onclick="agregarAlumnoAClaseActual()">+ Inscribir Alumno</button>
-        </div>
+        </details>
         
-        <button class="btn-danger" onclick="eliminarClaseActual()">Eliminar Clase</button>
+        <button class="btn-danger" onclick="eliminarClaseActual()">Borrar Clase</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-metricas">
+    <div class="modal-content" style="max-width: 650px;">
+        <button class="close-modal" onclick="cerrarModal('modal-metricas')">×</button>
+        <h2 style="margin-top: 0; text-align: center;">📊 Métricas e Informes</h2>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Período de Tiempo:</label>
+                <select><option>6 Meses (Mes a Mes)</option></select>
+            </div>
+            <div class="form-group">
+                <label>Categoría a Analizar:</label>
+                <select><option>Turnos P. Indoor</option></select>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-legend">
+                <span><div class="legend-box-green"></div> Horas Reservadas</span>
+                <span><div class="legend-box-blue"></div> Cantidad de Turnos</span>
+            </div>
+            
+            <div class="chart-y-axis">
+                <span>1</span><span>0.8</span><span>0.6</span><span>0.4</span><span>0.2</span><span>0</span>
+            </div>
+            
+            <div class="chart-line-zero">
+                <div class="chart-dot" style="left: 0%;"></div>
+                <div class="chart-dot" style="left: 20%;"></div>
+                <div class="chart-dot" style="left: 40%;"></div>
+                <div class="chart-dot" style="left: 60%;"></div>
+                <div class="chart-dot" style="left: 80%;"></div>
+                <div class="chart-dot" style="left: 100%;"></div>
+                
+                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 0%; transform: translateX(-50%);">Dic 25</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 20%; transform: translateX(-50%);">Ene 26</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 40%; transform: translateX(-50%);">Feb 26</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 60%; transform: translateX(-50%);">Mar 26</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 80%; transform: translateX(-50%);">Abr 26</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 100%; transform: translateX(-50%);">May 26</span>
+            </div>
+        </div>
+
+        <table class="metrics-table">
+            <thead>
+                <tr>
+                    <th>Período</th>
+                    <th>Horas Reservadas</th>
+                    <th>Cantidad de Turnos</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Dic 25</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
+                <tr><td>Ene 26</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
+                <tr><td>Feb 26</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
+                <tr><td>Mar 26</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
+                <tr><td>Abr 26</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
+            </tbody>
+        </table>
+
+        <button class="btn-secondary" onclick="cerrarModal('modal-metricas')">Volver al Panel</button>
     </div>
 </div>
 
 <script>
     let perfil = JSON.parse(localStorage.getItem('profPerfil')) || { nombre: 'Admin', apellido: '', precioInd: '', precioGrup: '' };
     let clases = JSON.parse(localStorage.getItem('profClasesTurnos')) || [];
-    let solicitudes = JSON.parse(localStorage.getItem('profSolicitudes')) || [
-        { id: 1, alumno: 'Carlos Tevez', tipo: 'Grupal', dia: 'Hoy', hora: '18:00', estado: 'Pendiente' }
-    ];
     let claseSeleccionadaId = null;
-    let fechaMostrada = new Date();
-    const nombresDias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    let fechaMostrada = new Date(); // Domingo 10 de Mayo de 2026
+
+    const diasAbrev = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
 
     function switchView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -382,6 +472,10 @@
     }
 
     /* --- GESTIÓN DE MODALES --- */
+    function abrirModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
     function abrirModalCrear(horaStr) {
         document.getElementById('claseHora').value = horaStr;
         document.getElementById('modal-crear').style.display = 'flex';
@@ -406,10 +500,15 @@
     function renderizarCalendario() {
         const hoy = new Date();
         const esHoy = fechaMostrada.toDateString() === hoy.toDateString();
-        const diaNombre = nombresDias[fechaMostrada.getDay()];
-        const fechaFormat = fechaMostrada.toISOString().split('T')[0];
         
-        document.getElementById('label-dia').innerText = esHoy ? 'HOY' : diaNombre.toUpperCase();
+        const diaNombre = diasAbrev[fechaMostrada.getDay()];
+        const diaMes = fechaMostrada.getDate();
+        const mes = fechaMostrada.getMonth() + 1;
+        const textoFecha = `${diaNombre} ${diaMes}/${mes}`;
+        
+        document.getElementById('label-dia').innerText = esHoy ? 'HOY' : textoFecha;
+        
+        const fechaFormat = fechaMostrada.toISOString().split('T')[0];
         
         const grid = document.getElementById('calendar-grid');
         grid.innerHTML = '';
@@ -516,7 +615,7 @@
         const whatsapp = document.getElementById('alumWsp').value;
 
         if (!nombre || !apellido || !whatsapp) {
-            alert('Por favor completá nombre, apellido y WhatsApp.');
+            alert('Por favor completá todos los campos.');
             return;
         }
 
@@ -542,7 +641,7 @@
     }
 
     function eliminarClaseActual() {
-        if(confirm('¿Estás seguro de que querés eliminar esta clase?')) {
+        if(confirm('¿Estás seguro de que querés borrar esta clase?')) {
             clases = clases.filter(c => c.id !== claseSeleccionadaId);
             localStorage.setItem('profClasesTurnos', JSON.stringify(clases));
             cerrarModal('modal-detalle');
@@ -550,44 +649,9 @@
         }
     }
 
-    /* --- SOLICITUDES --- */
-    function renderizarSolicitudes() {
-        const contenedor = document.getElementById('listaSolicitudes');
-        contenedor.innerHTML = '';
-        const pendientes = solicitudes.filter(s => s.estado === 'Pendiente');
-
-        if(pendientes.length === 0) {
-            contenedor.innerHTML = '<p style="color: var(--text-muted); padding: 15px 0;">No hay solicitudes pendientes.</p>';
-            return;
-        }
-
-        pendientes.forEach(sol => {
-            const div = document.createElement('div');
-            div.className = 'solicitud-item';
-            div.innerHTML = `
-                <div>
-                    <p style="margin: 0; font-size: 0.95rem;"><strong>${sol.alumno}</strong></p>
-                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">${sol.tipo} - ${sol.dia} a las ${sol.hora}</p>
-                </div>
-                <div>
-                    <button class="btn-icon-action text-success" onclick="gestionarSolicitud(${sol.id}, 'Aceptada')">✓</button>
-                    <button class="btn-icon-action text-danger" onclick="gestionarSolicitud(${sol.id}, 'Rechazada')">✗</button>
-                </div>
-            `;
-            contenedor.appendChild(div);
-        });
-    }
-
-    function gestionarSolicitud(id, estado) {
-        solicitudes = solicitudes.filter(s => s.id !== id);
-        localStorage.setItem('profSolicitudes', JSON.stringify(solicitudes));
-        renderizarSolicitudes();
-    }
-
     // Inicializar
     cargarPerfil();
     renderizarCalendario();
-    renderizarSolicitudes();
 
 </script>
 </body>
