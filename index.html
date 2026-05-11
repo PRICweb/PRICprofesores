@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRIC - Panel de Profesores y Agenda</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            /* Colores extraídos de la segunda imagen */
             --bg-main: #1b1e25; 
             --bg-panel: #242730; 
             --bg-calendar: #1c1f26;
@@ -67,10 +67,12 @@
             background-color: var(--bg-panel); padding: 20px; border-radius: 8px;
             width: 90%; max-width: 450px; border: 1px solid var(--border-color);
             position: relative;
+            max-height: 90vh; overflow-y: auto;
         }
         .close-modal {
             position: absolute; top: 10px; right: 15px; background: none;
             border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;
+            z-index: 10;
         }
         .close-modal:hover { color: white; }
 
@@ -90,7 +92,7 @@
         .btn-danger { background-color: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 6px; width: 100%; margin-top: 10px; font-weight: bold;}
         .btn-sm { padding: 8px 15px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; border: none; color: white; background-color: var(--blue-accent); }
 
-        /* --- Acordeones Base --- */
+        /* --- Acordeones --- */
         .accordion {
             background-color: var(--bg-main);
             border-radius: 8px;
@@ -114,14 +116,10 @@
         .accordion[open] summary::after { content: '▲'; }
         
         .accordion-content {
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            background-color: var(--bg-panel);
+            padding: 15px; border: 1px solid var(--border-color);
+            border-top: none; border-radius: 0 0 8px 8px; background-color: var(--bg-panel);
         }
 
-        /* --- Acordeón Secundario (Modal Alumnos) --- */
         .accordion-secundario { background-color: var(--bg-main); border: 1px solid var(--border-color); margin-bottom: 10px;}
         .accordion-secundario summary { background-color: var(--bg-panel); color: white; border-radius: 8px;}
         .accordion-secundario .accordion-content { background-color: var(--bg-main); border: none; border-top: 1px solid var(--border-color); }
@@ -162,7 +160,6 @@
         }
         .hour-slot:hover { background-color: rgba(255,255,255,0.02); }
 
-        /* --- Bloques de Clase en la grilla --- */
         .class-block {
             position: absolute; left: 0; right: 0; top: 0;
             border-radius: 4px; padding: 6px 10px; font-size: 0.85rem;
@@ -173,11 +170,9 @@
         }
         .class-block:hover { filter: brightness(1.05); }
         .class-block strong { font-size: 0.95rem; display: block; margin-bottom: 2px;}
-        
         .class-empty { background-color: var(--class-empty-bg); border-left: 5px solid var(--class-empty-border); }
         .class-full { background-color: var(--class-full-bg); border-left: 5px solid var(--class-full-border); }
 
-        /* --- Lista de alumnos en modal --- */
         .alumno-item {
             background-color: var(--bg-main); padding: 10px; border-radius: 6px;
             border: 1px solid var(--border-color); margin-bottom: 8px;
@@ -185,35 +180,13 @@
         }
         .alumno-item p { margin: 0; font-size: 0.9rem; }
         .alumno-item small { color: var(--text-muted); }
-        
-        /* --- Gráfico Mockup --- */
-        .chart-container {
-            background-color: var(--bg-main); padding: 20px; border-radius: 8px; 
-            border: 1px solid var(--border-color); margin-bottom: 20px; 
-            height: 250px; position: relative; display: flex; flex-direction: column; justify-content: flex-end;
-        }
-        .chart-legend {
-            position: absolute; top: 15px; width: 100%; text-align: center; 
-            font-size: 0.85rem; color: var(--text-muted);
-        }
-        .chart-legend span { display: inline-flex; align-items: center; gap: 5px; margin: 0 10px; }
-        .legend-box-green { width: 30px; height: 10px; border: 2px solid var(--success); }
-        .legend-box-blue { width: 30px; height: 10px; background-color: var(--blue-accent); }
-        
-        .chart-y-axis {
-            position: absolute; left: 15px; bottom: 30px; display: flex; flex-direction: column; 
-            justify-content: space-between; height: 180px; font-size: 0.75rem; color: var(--text-muted);
-        }
-        
-        .chart-line-zero {
-            margin-left: 40px; border-bottom: 2px solid var(--success); 
-            display: flex; justify-content: space-between; padding-bottom: 5px; position: relative;
-        }
-        .chart-dot {
-            width: 8px; height: 8px; background-color: var(--success); border-radius: 50%;
-            position: absolute; bottom: -5px; transform: translateX(-50%);
-        }
 
+        /* --- Métricas y Tablas --- */
+        .chart-container {
+            background-color: var(--bg-main); border-radius: 8px; 
+            border: 1px solid var(--border-color); margin-bottom: 20px; 
+            height: 280px; padding: 15px; box-sizing: border-box;
+        }
         .metrics-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.9rem; margin-bottom: 20px; }
         .metrics-table th { padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-weight: normal; }
         .metrics-table td { padding: 12px; border-bottom: 1px solid var(--border-color); }
@@ -228,8 +201,6 @@
         <header>
             <div class="greeting">Hola,<br><span class="headerName" style="color: var(--blue-accent);">Admin</span></div>
             <div class="header-actions">
-                <button class="icon-btn" title="Perfil">🙎‍♂️</button>
-                <button class="icon-btn" title="Pagos">💰</button>
                 <button class="icon-btn" onclick="abrirModal('modal-metricas')" title="Métricas">📊</button>
                 <button class="icon-btn" onclick="switchView('view-config')" title="Configuración">⚙️</button>
             </div>
@@ -245,7 +216,7 @@
         <details class="accordion" open>
             <summary>Solicitudes</summary>
             <div class="accordion-content" id="listaSolicitudes" style="padding: 0 15px;">
-                </div>
+            </div>
         </details>
 
         <div class="calendar-nav">
@@ -258,8 +229,8 @@
             <button class="btn-sm" onclick="abrirModalCrear('08:00')">+ Nueva Clase</button>
             
             <div class="nav-actions">
-                <button class="btn-sm" onclick="irAHoy()">Hoy</button>
-                <button class="btn-sm">📅 Calendario</button>
+                <button class="btn-sm" onclick="irAHoy()" style="background-color: var(--border-color);">Hoy</button>
+                <button class="btn-sm" style="background-color: var(--border-color);">📅 Calendario</button>
             </div>
         </div>
 
@@ -382,56 +353,38 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Período de Tiempo:</label>
-                <select><option>6 Meses (Mes a Mes)</option></select>
+                <select id="filtroPeriodo" onchange="actualizarMetricas()">
+                    <option value="1_ano">1 Año (Mes a Mes)</option>
+                    <option value="6_meses" selected>6 Meses (Mes a Mes)</option>
+                    <option value="3_meses">3 Meses (Quincenal)</option>
+                    <option value="1_mes">Último Mes (Semanal)</option>
+                    <option value="1_semana">Última Semana (Diario)</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Categoría a Analizar:</label>
-                <select><option>Turnos P. Indoor</option></select>
+                <select id="filtroCategoria" onchange="actualizarMetricas()">
+                    <option value="ind">Cant. clas. ind.</option>
+                    <option value="grup">Cant. clas. grup.</option>
+                    <option value="alumnos">Alumnos</option>
+                    <option value="ganancia">Ganancia</option>
+                </select>
             </div>
         </div>
 
         <div class="chart-container">
-            <div class="chart-legend">
-                <span><div class="legend-box-green"></div> Horas Reservadas</span>
-                <span><div class="legend-box-blue"></div> Cantidad de Turnos</span>
-            </div>
-            
-            <div class="chart-y-axis">
-                <span>1</span><span>0.8</span><span>0.6</span><span>0.4</span><span>0.2</span><span>0</span>
-            </div>
-            
-            <div class="chart-line-zero">
-                <div class="chart-dot" style="left: 0%;"></div>
-                <div class="chart-dot" style="left: 20%;"></div>
-                <div class="chart-dot" style="left: 40%;"></div>
-                <div class="chart-dot" style="left: 60%;"></div>
-                <div class="chart-dot" style="left: 80%;"></div>
-                <div class="chart-dot" style="left: 100%;"></div>
-                
-                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 0%; transform: translateX(-50%);">Dic 25</span>
-                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 20%; transform: translateX(-50%);">Ene 26</span>
-                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 40%; transform: translateX(-50%);">Feb 26</span>
-                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 60%; transform: translateX(-50%);">Mar 26</span>
-                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 80%; transform: translateX(-50%);">Abr 26</span>
-                <span style="font-size: 0.75rem; color: var(--text-muted); position: absolute; bottom: -20px; left: 100%; transform: translateX(-50%);">May 26</span>
-            </div>
+            <canvas id="miGrafico"></canvas>
         </div>
 
         <table class="metrics-table">
             <thead>
-                <tr>
+                <tr id="tablaHeader">
                     <th>Período</th>
-                    <th>Horas Reservadas</th>
-                    <th>Cantidad de Turnos</th>
+                    <th>Valor</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr><td>Dic 25</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
-                <tr><td>Ene 26</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
-                <tr><td>Feb 26</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
-                <tr><td>Mar 26</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
-                <tr><td>Abr 26</td><td style="color: var(--success); font-weight: bold;">0</td><td style="color: var(--blue-accent); font-weight: bold;">0</td></tr>
-            </tbody>
+            <tbody id="tablaBody">
+                </tbody>
         </table>
 
         <button class="btn-secondary" onclick="cerrarModal('modal-metricas')">Volver al Panel</button>
@@ -442,7 +395,8 @@
     let perfil = JSON.parse(localStorage.getItem('profPerfil')) || { nombre: 'Admin', apellido: '', precioInd: '', precioGrup: '' };
     let clases = JSON.parse(localStorage.getItem('profClasesTurnos')) || [];
     let claseSeleccionadaId = null;
-    let fechaMostrada = new Date(); // Domingo 10 de Mayo de 2026
+    let fechaMostrada = new Date();
+    let miGrafico; // Variable para almacenar la instancia de Chart.js
 
     const diasAbrev = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
 
@@ -474,6 +428,10 @@
     /* --- GESTIÓN DE MODALES --- */
     function abrirModal(modalId) {
         document.getElementById(modalId).style.display = 'flex';
+        if(modalId === 'modal-metricas' && !miGrafico) {
+            inicializarGrafico();
+            actualizarMetricas();
+        }
     }
 
     function abrirModalCrear(horaStr) {
@@ -500,7 +458,6 @@
     function renderizarCalendario() {
         const hoy = new Date();
         const esHoy = fechaMostrada.toDateString() === hoy.toDateString();
-        
         const diaNombre = diasAbrev[fechaMostrada.getDay()];
         const diaMes = fechaMostrada.getDate();
         const mes = fechaMostrada.getMonth() + 1;
@@ -509,10 +466,8 @@
         document.getElementById('label-dia').innerText = esHoy ? 'HOY' : textoFecha;
         
         const fechaFormat = fechaMostrada.toISOString().split('T')[0];
-        
         const grid = document.getElementById('calendar-grid');
         grid.innerHTML = '';
-        
         const horas = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
 
         horas.forEach(hora => {
@@ -568,7 +523,6 @@
             duracion: parseInt(document.getElementById('claseDuracion').value),
             alumnos: []
         };
-        
         clases.push(nuevaClase);
         localStorage.setItem('profClasesTurnos', JSON.stringify(clases));
         renderizarCalendario();
@@ -578,10 +532,8 @@
     function abrirDetalleClase(id) {
         claseSeleccionadaId = id;
         const clase = clases.find(c => c.id === id);
-        
         document.getElementById('detalleTitulo').innerText = `${clase.tipo} - ${clase.hora} hs`;
         renderizarAlumnosDeClase(clase);
-        
         document.getElementById('modal-detalle').style.display = 'flex';
     }
 
@@ -609,7 +561,6 @@
 
     function agregarAlumnoAClaseActual() {
         if (!claseSeleccionadaId) return;
-        
         const nombre = document.getElementById('alumNombre').value;
         const apellido = document.getElementById('alumApellido').value;
         const whatsapp = document.getElementById('alumWsp').value;
@@ -621,7 +572,6 @@
 
         let claseIndex = clases.findIndex(c => c.id === claseSeleccionadaId);
         clases[claseIndex].alumnos.push({ nombre, apellido, whatsapp });
-        
         localStorage.setItem('profClasesTurnos', JSON.stringify(clases));
         
         document.getElementById('alumNombre').value = '';
@@ -647,6 +597,116 @@
             cerrarModal('modal-detalle');
             renderizarCalendario();
         }
+    }
+
+    /* --- LÓGICA DE GRÁFICOS Y MÉTRICAS (CHART.JS) --- */
+    function inicializarGrafico() {
+        const ctx = document.getElementById('miGrafico').getContext('2d');
+        miGrafico = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Datos',
+                    data: [],
+                    borderColor: '#10b981', // Verde success
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#10b981'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: '#2f3440' }, 
+                        ticks: { color: '#8b95a5' } 
+                    },
+                    x: { 
+                        grid: { color: 'transparent' }, 
+                        ticks: { color: '#8b95a5' } 
+                    }
+                },
+                plugins: {
+                    legend: { display: false } // Ocultamos leyenda nativa para hacer un diseño limpio
+                }
+            }
+        });
+    }
+
+    function actualizarMetricas() {
+        if(!miGrafico) return;
+
+        const periodo = document.getElementById('filtroPeriodo').value;
+        const categoria = document.getElementById('filtroCategoria').value;
+
+        // Generar etiquetas (eje X) simuladas según el período
+        let labels = [];
+        let baseData = [];
+        
+        if(periodo === '6_meses') {
+            labels = ['Dic 25', 'Ene 26', 'Feb 26', 'Mar 26', 'Abr 26', 'May 26'];
+            baseData = [12, 15, 14, 20, 25, 22]; 
+        } else if (periodo === '1_ano') {
+            labels = ['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr', 'May'];
+            baseData = [10, 15, 12, 18, 20, 25, 22, 28, 30, 35, 32, 40];
+        } else if (periodo === '3_meses') {
+            labels = ['1Q Mar', '2Q Mar', '1Q Abr', '2Q Abr', '1Q May', '2Q May'];
+            baseData = [5, 8, 7, 10, 12, 15];
+        } else if (periodo === '1_mes') {
+            labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
+            baseData = [2, 4, 3, 5];
+        } else if (periodo === '1_semana') {
+            labels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+            baseData = [1, 2, 1, 3, 2, 4, 3];
+        }
+
+        // Modificar multiplicador para simular distintos datos
+        let catName = "Valor";
+        let colorLine = "#10b981"; // Verde por defecto
+        
+        if (categoria === 'ind') {
+            catName = "Clases Individuales";
+            baseData = baseData.map(d => d * 2);
+            colorLine = "#488df6"; // Azul
+        } else if (categoria === 'grup') {
+            catName = "Clases Grupales";
+            baseData = baseData.map(d => d * 3);
+            colorLine = "#fbb146"; // Amarillo
+        } else if (categoria === 'alumnos') {
+            catName = "Total Alumnos";
+            baseData = baseData.map(d => d * 8);
+            colorLine = "#10b981"; // Verde
+        } else if (categoria === 'ganancia') {
+            catName = "Ganancia";
+            baseData = baseData.map(d => d * 5000);
+            colorLine = "#10b981"; 
+        }
+
+        // Actualizar el Gráfico
+        miGrafico.data.labels = labels;
+        miGrafico.data.datasets[0].data = baseData;
+        miGrafico.data.datasets[0].label = catName;
+        miGrafico.data.datasets[0].borderColor = colorLine;
+        miGrafico.data.datasets[0].pointBackgroundColor = colorLine;
+        miGrafico.data.datasets[0].backgroundColor = colorLine === "#488df6" ? 'rgba(72, 141, 246, 0.1)' : (colorLine === "#fbb146" ? 'rgba(251, 177, 70, 0.1)' : 'rgba(16, 185, 129, 0.1)');
+        miGrafico.update();
+
+        // Actualizar la Tabla de datos debajo
+        document.getElementById('tablaHeader').innerHTML = `<th>Período</th><th>${catName}</th>`;
+        let tbody = '';
+        for(let i=0; i<labels.length; i++) {
+            let valStr = categoria === 'ganancia' ? '$' + baseData[i].toLocaleString() : baseData[i];
+            tbody += `<tr>
+                <td>${labels[i]}</td>
+                <td style="color: var(--blue-accent); font-weight: bold;">${valStr}</td>
+            </tr>`;
+        }
+        document.getElementById('tablaBody').innerHTML = tbody;
     }
 
     // Inicializar
